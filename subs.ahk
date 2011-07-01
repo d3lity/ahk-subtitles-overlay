@@ -3,9 +3,6 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-;MsgBox %1%
-;ExitApp
-
 Hotkey, §, goex
 Hotkey, 1, syncplus
 Hotkey, 2, syncminus
@@ -33,6 +30,14 @@ s_yy=100
 IniRead, s_fontsize, settings.ini,sub,fontsize,50
 IniRead, s_yy, settings.ini,sub,from_bottom,100
 IniRead, s_sub_second, settings.ini,sub,sub_second,965
+
+subtitle("Pausing for you to find play button",4000)
+subtitle("In 5",1000)
+subtitle("In 4",1000)
+subtitle("In 3",1000)
+subtitle("In 2",1000)
+subtitle("In 1",1000)
+subtitle("Push 'Play' Now!",1000)
 
 start:=A_TickCount
 
@@ -97,6 +102,8 @@ Loop, read, %fn%
 		}
 	}
 }
+subtitle("*** End of subtitles ***",2000)
+ExitApp
 
 subtitle(sub,millisecs)
 {
