@@ -1,0 +1,32 @@
+Autohotkey script for showing subtitles over video
+==================================================
+
+Why :
+* while watching from browser (flash/Divx/etc.) you can't just easily load subtitles on the player (like in VLC or others)
+* movies/shows have sometimes languages used that you don't really understand (french, spanish, ..)
+
+How to use
+==========
+You have have Autohotkey (http://www.autohotkey.com/) installed. I believe it requires Windows operating system.
+
+- drop .srt or .sub -file over the script and it should start playing subtitles
+- match subtitle playing with movie/show
+- keys:
+	1		Delay subtitles (if they come too early)
+	2		Forward subs (when it comes too late)
+	3		.sub Less delay (if subtitles seem to be getting behind, tried adjusting with 2)
+	4		.sub More delay (if subtitles seem to be getting earlier, and you have to adjust with 1)
+	q		smaller font-size
+	w		larger font-size
+	a		higher from the bottom of the screen
+	s		lower towards the bottom of the screen
+	§		Exit script (also by clicking Exit from trayicon)
+	
+settings.ini
+============
+File with default program settings in it.
+
+TODO
+====
+- add some kind of gui for easier interaction
+- support for more subtitle formats
