@@ -19,7 +19,7 @@ How to use
 You have to have Autohotkey (http://www.autohotkey.com/) installed. I believe it requires Windows operating system.
 
 - drag & drop .srt or .sub -file over the script and it should start playing subtitles
-- carefully match subtitle playing with video
+- carefully match subtitle playing with video (push play on video at right time)
 - keys:
 	1		Delay subtitles (if they come too early)
 	2		Forward subs (when they come too late)

@@ -35,8 +35,6 @@ IniRead, s_fontsize, settings.ini,sub,fontsize,50
 IniRead, s_yy, settings.ini,sub,from_bottom,100
 IniRead, s_sub_second, settings.ini,sub,sub_second,965
 
-if (d)
-{
 subtitle("Pausing for you to find play button",4000)
 subtitle("In 5",1000)
 subtitle("In 4",1000)
@@ -44,8 +42,6 @@ subtitle("In 3",1000)
 subtitle("In 2",1000)
 subtitle("In 1",1000)
 subtitle("Push 'Play' Now!",1000)
-}
-
 
 start:=A_TickCount
 
