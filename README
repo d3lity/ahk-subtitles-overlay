@@ -9,6 +9,7 @@ Why and why not:
 + very light and tiny program
 + you can use different subtitles while whatching DVDs, other than included ones
 - fast forwarding or jumping in timeline -> very hard to keep subs synced
+- no ability of rewinding subs (this just reads file sequantially)
 - seperate controls for subtitles, so if you decide to pause movie, you got to pause subtitles also
 - Program can't be used for simultaneus translating or burning texts to your streams
 
@@ -22,6 +23,7 @@ You have to have Autohotkey (http://www.autohotkey.com/) installed. I believe it
 - keys:
 	1		Delay subtitles (if they come too early)
 	2		Forward subs (when they come too late)
+	z		Skip to next subtitle (when you seem to be far away from right position)
 	3		(.sub) Less delay (if subtitles seem to be getting behind, and have tried adjusting with 2)
 	4		(.sub) More delay (if subtitles seem to be getting earlier, and you have to adjust with 1)
 	q		smaller font-size
