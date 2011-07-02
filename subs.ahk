@@ -3,7 +3,7 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-Hotkey, §, goex
+Hotkey, x, goex
 Hotkey, 1, syncplus
 Hotkey, 2, syncminus
 
@@ -15,6 +15,9 @@ Hotkey, w, fontplus
 
 Hotkey, a, tup
 Hotkey, s, tdown
+
+Hotkey, p, toggle_pause
+pause_start:=0
 
 SysGet,s_width, 16
 SysGet,s_widthv, 78
@@ -117,16 +120,52 @@ subtitle(sub,millisecs)
 	Progress,W%s_width% X%s_xx% Y%y% B H%h% ZH0 ZW0 FS%s_fontsize% CTffffff CW000000
 	;Progress,W1000 H B ZX0 ZY0 ZH0 FS50 CTffffff CW000000
 	;WinSet, TransColor, fefefe, %A_ScriptName%
-	WinSet,Transparent,150, %A_ScriptName%
-	Progress,,%sub%
-	Sleep %millisecs%
-	Progress, Off
+	if (millisecs>500)
+	{
+		WinSet,Transparent,0, %A_ScriptName%
+		Progress,,%sub%
+		Loop 5{
+			tp:=A_Index*30
+			WinSet,Transparent,%tp%, %A_ScriptName%
+			Sleep 40
+		}
+		WinSet,Transparent,150, %A_ScriptName%
+		millisecs:=millisecs-400
+		Sleep %millisecs%
+		Loop 5{
+			tp:=(6-A_Index)*30
+				WinSet,Transparent,%tp%, %A_ScriptName%
+			Sleep 40
+		}
+
+		Progress, Off
+	}
+	else
+	{
+		WinSet,Transparent,150, %A_ScriptName%
+		Progress,,%sub%
+		Sleep %millisecs%
+		Progress, Off
+	}
 }
 
 show_info(){
 	global s_width,s_height,s_fontsize,s_yy,s_xx,s_sub_second,start
 	Traytip,,fs=%s_fontsize% yy=%s_yy% sub=%s_sub_second% start=%start%
 }
+
+toggle_pause:
+if (pause_start>0)
+{
+	pause_len:=A_tickcount-pause_start
+	start:=start+pause_len
+	pause_start:=0
+	Pause, Off,1
+	return
+}
+pause_start:=A_tickcount
+Pause, On,1
+return
 
 tup:
 s_yy:=s_yy+10

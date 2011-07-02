@@ -1,32 +1,45 @@
 Autohotkey script for showing subtitles over video
 ==================================================
 
-Why :
-* while watching from browser (flash/Divx/etc.) you can't just easily load subtitles on the player (like in VLC or others)
-* movies/shows have sometimes languages used that you don't really understand (french, spanish, ..)
+Why and why not:
++ put subtitles "on" while streaming with browser (flash/Divx/etc.), that is, if you have the file for it
++ foreign videos/shows use languages that you don't know
++ Can be huge help for hearing impaired (hopefully)
++ easy to use (maybe some day, if not yet)
++ very light and tiny program
++ you can use different subtitles while whatching DVDs, other than included ones
+- fast forwarding or jumping in timeline -> very hard to keep subs synced
+- seperate controls for subtitles, so if you decide to pause movie, you got to pause subtitles also
+- Program can't be used for simultaneus translating or burning texts to your streams
+
 
 How to use
 ==========
-You have have Autohotkey (http://www.autohotkey.com/) installed. I believe it requires Windows operating system.
+You have to have Autohotkey (http://www.autohotkey.com/) installed. I believe it requires Windows operating system.
 
-- drop .srt or .sub -file over the script and it should start playing subtitles
-- match subtitle playing with movie/show
+- drag & drop .srt or .sub -file over the script and it should start playing subtitles
+- carefully match subtitle playing with video
 - keys:
 	1		Delay subtitles (if they come too early)
-	2		Forward subs (when it comes too late)
-	3		.sub Less delay (if subtitles seem to be getting behind, tried adjusting with 2)
-	4		.sub More delay (if subtitles seem to be getting earlier, and you have to adjust with 1)
+	2		Forward subs (when they come too late)
+	3		(.sub) Less delay (if subtitles seem to be getting behind, and have tried adjusting with 2)
+	4		(.sub) More delay (if subtitles seem to be getting earlier, and you have to adjust with 1)
 	q		smaller font-size
 	w		larger font-size
 	a		higher from the bottom of the screen
 	s		lower towards the bottom of the screen
-	§		Exit script (also by clicking Exit from trayicon)
+	p		Pause subtitle playing (so you could go bathroom while watching long movies)
+	x		Exit script (also by clicking Exit from trayicon)
+
+If keys overlap on some keyboard commands that you use during watching, you could change them by editing script-file.
 	
+
 settings.ini
 ============
-File with default program settings in it.
+File with default program settings in it. You can change these to your liking with text editor.
+
 
 TODO
 ====
-- add some kind of gui for easier interaction
+- add some kind of GUI for easier interaction
 - support for more subtitle formats
