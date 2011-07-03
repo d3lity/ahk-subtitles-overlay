@@ -34,6 +34,9 @@ s_yy=100
 IniRead, s_fontsize, settings.ini,sub,fontsize,50
 IniRead, s_yy, settings.ini,sub,from_bottom,100
 IniRead, s_sub_second, settings.ini,sub,sub_second,965
+IniRead, s_opacity, settings.ini,sub,opacity,190
+opacity_factor:=s_opacity/11
+
 
 subtitle("Pausing for you to find play button",4000)
 subtitle("In 5",1000)
@@ -133,11 +136,11 @@ wait_interruptable(w)
 
 subtitle(sub,millisecs)
 {
-	global s_width,s_height,s_fontsize,s_yy,s_xx,break_out
+	global s_width,s_height,s_fontsize,s_yy,s_xx,break_out,opacity_factor,s_opacity
 	h:=0
 	Loop, parse, sub, `n
 	{
-		h:=h + s_fontsize +s_fontsize*0.65
+		h:=h + s_fontsize +s_fontsize*0.7
 	}
 	y:=s_height-h-s_yy
 	Progress,W%s_width% X%s_xx% Y%y% B H%h% ZH0 ZW0 FS%s_fontsize% CTffffff CW000000
@@ -151,17 +154,17 @@ subtitle(sub,millisecs)
 		WinSet,Transparent,0, %A_ScriptName%
 		Progress,,%sub%
 		Loop 5{
-			tp:=A_Index*30
+			tp:=A_Index*opacity_factor
 			WinSet,Transparent,%tp%, %A_ScriptName%
-			Sleep 40
+			Sleep 30
 		}
-		WinSet,Transparent,150, %A_ScriptName%
-		millisecs:=millisecs-400
+		WinSet,Transparent,%s_opacity%, %A_ScriptName%
+		millisecs:=millisecs-300
 		wait_interruptable(millisecs)
 		Loop 5{
-			tp:=(6-A_Index)*30
+			tp:=(6-A_Index)*opacity_factor
 				WinSet,Transparent,%tp%, %A_ScriptName%
-			Sleep 40
+			Sleep 30
 		}
 
 		Progress, Off
