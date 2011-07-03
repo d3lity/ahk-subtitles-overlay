@@ -202,21 +202,25 @@ return
 
 tup:
 s_yy:=s_yy+10
+subtitle("Moved up",50)
 show_info()
 return
 
 tdown:
 s_yy:=s_yy-10
+subtitle("Moved down",50)
 show_info()
 return
 
 fontplus:
 s_fontsize:=s_fontsize+1
+subtitle("Bigger font-size",50)
 show_info()
 return
 
 fontminus:
 s_fontsize:=s_fontsize-1
+subtitle("Smaller font-size",50)
 show_info()
 return
 
