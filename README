@@ -33,7 +33,9 @@ You have to have Autohotkey (http://www.autohotkey.com/) installed. I believe it
 	p		Pause subtitle playing (so you could go bathroom while watching long movies)
 	x		Exit script (also by clicking Exit from trayicon)
 
-If keys overlap on some keyboard commands that you use during watching, you could change them by editing script-file.
+If keys overlap on some keyboard commands that you use during watching, you could change them by editing script-file. 
+
+While this program has many keys, it doesn't mean you need to remember them all. It is possible use this script without never having to use any of these shortcut keys - that is if you have correct subtitles for what you are watching and .. not pausing and you're happy with text size and position.
 	
 
 settings.ini
