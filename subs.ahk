@@ -6,7 +6,7 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 Hotkey, x, goex
 Hotkey, 1, syncplus
 Hotkey, 2, syncminus
-Hotkey, z, nextsub
+Hotkey, z, do_nothing
 
 Hotkey, 3, ssminus
 Hotkey, 4, ssplus
@@ -31,12 +31,13 @@ SysGet,s_height, 79
 s_fontsize:=50
 s_yy=100
 
+; Read default settings from settings.ini
+
 IniRead, s_fontsize, settings.ini,sub,fontsize,50
 IniRead, s_yy, settings.ini,sub,from_bottom,100
 IniRead, s_sub_second, settings.ini,sub,sub_second,965
 IniRead, s_opacity, settings.ini,sub,opacity,190
 opacity_factor:=s_opacity/11
-
 
 subtitle("Pausing for you to find play button",4000)
 subtitle("In 5",1000)
@@ -47,6 +48,8 @@ subtitle("In 1",1000)
 subtitle("Push 'Play' Now!",1000)
 
 start:=A_TickCount
+wait_till:=start
+breaked_down:=0
 
 Loop %1%, 1
 	fn = %A_LoopFileLongPath%
@@ -74,8 +77,8 @@ Loop, read, %fn%
 			tb:=ar2*ftime
 			l:=tb-ta
 			sub:=RegExReplace(ar3,"[|]","`n")
-			w:=ta-(now-start)
-			wait_interruptable(w)
+			wait_till:=ta+start
+			wait_interruptable(wait_till)
 			subtitle(sub,l)			
 		}
 	}
@@ -105,8 +108,8 @@ Loop, read, %fn%
 			tb:= Round(ar5)*3600000 + Round(ar6)*60000 + Round(ar7)*1000 + Round(ar8)
 			l:=tb-ta
 			nexti:=2
-			w:=ta-(now-start)
-			wait_interruptable(w)
+			wait_till:=start+ta
+			wait_interruptable(wait_till)
 			sub:=""
 		}
 	}
@@ -114,29 +117,31 @@ Loop, read, %fn%
 subtitle("*** End of subtitles ***",2000)
 ExitApp
 
-wait_interruptable(w)
+wait_interruptable(wait_till)
 {
-	global break_out,start
-	waits:=Floor(w/100)
-	leftover:=Mod(w,100)
-	Sleep %leftover%
-	Loop %waits%
-	{				
-		Sleep 100
-		if (break_out=1)
-		{
-			break_out:=0
+	global start,breaked_down
+	while now<wait_till
+	{
+		Sleep 10
+		now:=A_TickCount
+		GetKeyState, z_key,z,P
+		if (z_key="D")
+		{			
 			; Jump forward in time, so to speak
-			start:=start-(waits-A_Index)*100
-			;(A_TickCount-now)
-			break
+			start:=start-(wait_till-now)
+			return 1
+		}
+		else
+		{
+			breaked_down:=0
 		}
 	}
+	return 0
 }
 
 subtitle(sub,millisecs)
 {
-	global s_width,s_height,s_fontsize,s_yy,s_xx,break_out,opacity_factor,s_opacity
+	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down
 	h:=0
 	Loop, parse, sub, `n
 	{
@@ -144,10 +149,10 @@ subtitle(sub,millisecs)
 	}
 	y:=s_height-h-s_yy
 	Progress,W%s_width% X%s_xx% Y%y% B H%h% ZH0 ZW0 FS%s_fontsize% CTffffff CW000000
-
-	if (break_out)
+	GetKeyState, z_key,z,P
+	if ((break_out or z_key = "D") and breaked_down>1)
 	{
-		millisecs:=300
+		millisecs:=100
 	}
 	if (millisecs>500)
 	{
@@ -159,19 +164,24 @@ subtitle(sub,millisecs)
 			Sleep 30
 		}
 		WinSet,Transparent,%s_opacity%, %A_ScriptName%
-		millisecs:=millisecs-300
-		wait_interruptable(millisecs)
+		now:=A_TickCount
+		millisecs:=millisecs-330
+		wait_till:=now+millisecs
+		sleep_broken:=wait_interruptable(wait_till)
 		Loop 5{
 			tp:=(6-A_Index)*opacity_factor
 				WinSet,Transparent,%tp%, %A_ScriptName%
 			Sleep 30
 		}
-
+		if (sleep_broken)
+		{
+			breaked_down++
+		}
 		Progress, Off
 	}
 	else
 	{
-		WinSet,Transparent,150, %A_ScriptName%
+		WinSet,Transparent,%s_opacity%, %A_ScriptName%
 		Progress,,%sub%
 		Sleep %millisecs%
 		Progress, Off
@@ -183,9 +193,8 @@ show_info(){
 	Traytip,,fs=%s_fontsize% yy=%s_yy% sub=%s_sub_second% start=%start%
 }
 
-nextsub:
-break_out:=1
-return
+do_nothing:
+Return
 
 toggle_pause:
 if (pause_start>0)
@@ -202,13 +211,13 @@ return
 
 tup:
 s_yy:=s_yy+10
-subtitle("Moved up",50)
+subtitle("* * * * * * * / \ * * * * * * *`n* * * * * * *  ||  * * * * * * *",50)
 show_info()
 return
 
 tdown:
 s_yy:=s_yy-10
-subtitle("Moved down",50)
+subtitle("* * * * * * *  ||  * * * * * * *`n* * * * * * * \ / * * * * * * *",50)
 show_info()
 return
 
