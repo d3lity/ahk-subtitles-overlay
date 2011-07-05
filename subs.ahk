@@ -83,7 +83,7 @@ Loop, read, %fn%
 			sub:=RegExReplace(ar3,"[|]","`n")
 			wait_till:=ta+start
 			wait_interruptable(wait_till)
-			subtitle(sub,l)			
+			subtitle(sub,l)
 		}
 	}
 	
@@ -118,6 +118,15 @@ Loop, read, %fn%
 		}
 	}
 }
+
+; Show last subtitle also..
+if (f_srt>0)
+{
+	sub := RegExReplace(sub, "^`n", "")
+	sub := RegExReplace(sub, "`n$", "")
+	subtitle(sub,l)
+}
+
 subtitle("*** End of subtitles ***",2000)
 ExitApp
 
