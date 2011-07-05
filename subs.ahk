@@ -17,6 +17,9 @@ Hotkey, w, fontplus
 Hotkey, a, tup
 Hotkey, s, tdown
 
+Hotkey, d, change_alignment
+
+
 Hotkey, p, toggle_pause
 pause_start:=0
 
@@ -38,6 +41,7 @@ IniRead, s_yy, settings.ini,sub,from_bottom,100
 IniRead, s_sub_second, settings.ini,sub,sub_second,965
 IniRead, s_opacity, settings.ini,sub,opacity,190
 opacity_factor:=s_opacity/11
+IniRead, s_valign, settings.ini,sub,valign,bottom
 
 subtitle("Pausing for you to find play button",4000)
 subtitle("In 5",1000)
@@ -141,13 +145,16 @@ wait_interruptable(wait_till)
 
 subtitle(sub,millisecs)
 {
-	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down
+	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign
 	h:=0
 	Loop, parse, sub, `n
 	{
 		h:=h + s_fontsize +s_fontsize*0.7
 	}
-	y:=s_height-h-s_yy
+	if (s_valign="top")
+		y:=s_height-s_yy
+	else
+		y:=s_height-h-s_yy
 	Progress,W%s_width% X%s_xx% Y%y% B H%h% ZH0 ZW0 FS%s_fontsize% CTffffff CW000000
 	GetKeyState, z_key,z,P
 	if ((break_out or z_key = "D") and breaked_down>1)
@@ -195,6 +202,19 @@ show_info(){
 
 do_nothing:
 Return
+
+change_alignment:
+if (s_valign="top")
+{
+	s_valign:="bottom"
+	s_yy:=s_yy-(s_fontsize*2+s_fontsize*0.7)
+}
+else
+{
+	s_valign:="top"
+	s_yy:=s_yy+(s_fontsize*2+s_fontsize*0.7)
+}
+return
 
 toggle_pause:
 if (pause_start>0)
