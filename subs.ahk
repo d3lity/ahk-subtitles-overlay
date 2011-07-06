@@ -43,16 +43,17 @@ IniRead, s_fontsize, settings.ini,sub,fontsize,50
 IniRead, s_yy, settings.ini,sub,from_bottom,100
 IniRead, s_sub_second, settings.ini,sub,sub_second,965
 IniRead, s_opacity, settings.ini,sub,opacity,190
+IniRead, s_font, settings.ini,sub,font,Verdana
 opacity_factor:=s_opacity/11
 IniRead, s_valign, settings.ini,sub,valign,bottom
 IniRead, s_outline, settings.ini,sub,ouline,3
 s_outlinex2:=s_outline*2
 ;IniRead, s_transparency, settings.ini,sub,box_transparency,0
 
-	Gui 1: +LastFound +AlwaysOnTop -Caption +ToolWindow	
+	Gui 1: +LastFound +AlwaysOnTop -Caption +ToolWindow
 	Gui 1:Margin,0,0
 	Gui 1: Color, 111111
-	Gui 1: Font, s%s_fontsize% q5, Verdana
+	Gui 1: Font, s%s_fontsize% q2, %s_font%
 	sub:="fooo`nbbaar"
 	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt1 Center W%s_width%, %sub%
 	Gui 1: Add, Text, BackgroundTrans xp-%s_outline% yp-%s_outline% vSt2 Center W%s_width% c000000, %sub%
@@ -209,19 +210,19 @@ subtitle(sub,millisecs)
 			tp:=A_Index*opacity_factor
 			;WinSet,Transparent,%tp%, %A_ScriptName%
 			WinSet, TransColor, 111111 %tp%, %A_ScriptName%
-			Sleep 20
+			Sleep 25
 		}
 		;WinSet,Transparent,%s_opacity%, %A_ScriptName%
 		WinSet, TransColor, 111111 %s_opacity%, %A_ScriptName%
 		now:=A_TickCount
-		millisecs:=millisecs-200
+		millisecs:=millisecs-250
 		wait_till:=now+millisecs
 		sleep_broken:=wait_interruptable(wait_till)
 		Loop 5{
 			tp:=(6-A_Index)*opacity_factor
 			;WinSet,Transparent,%tp%, %A_ScriptName%
 			WinSet, TransColor, 111111 %tp%, %A_ScriptName%
-			Sleep 20
+			Sleep 25
 		}
 		if (sleep_broken)
 		{
