@@ -13,6 +13,9 @@ Hotkey, 4, ssplus
 
 Hotkey, q, fontminus
 Hotkey, w, fontplus
+Hotkey, r, oup
+Hotkey, e, odown
+;Hotkey, t, toggle_transparency
 
 Hotkey, a, tup
 Hotkey, s, tdown
@@ -42,6 +45,7 @@ IniRead, s_sub_second, settings.ini,sub,sub_second,965
 IniRead, s_opacity, settings.ini,sub,opacity,190
 opacity_factor:=s_opacity/11
 IniRead, s_valign, settings.ini,sub,valign,bottom
+;IniRead, s_transparency, settings.ini,sub,box_transparency,0
 
 subtitle("Pausing for you to find play button",4000)
 subtitle("In 5",1000)
@@ -154,7 +158,8 @@ wait_interruptable(wait_till)
 
 subtitle(sub,millisecs)
 {
-	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign
+	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign,last_sub,s_transparency
+	last_sub:=sub
 	h:=0
 	Loop, parse, sub, `n
 	{
@@ -177,17 +182,17 @@ subtitle(sub,millisecs)
 		Loop 5{
 			tp:=A_Index*opacity_factor
 			WinSet,Transparent,%tp%, %A_ScriptName%
-			Sleep 30
+			Sleep 20
 		}
 		WinSet,Transparent,%s_opacity%, %A_ScriptName%
 		now:=A_TickCount
-		millisecs:=millisecs-330
+		millisecs:=millisecs-200
 		wait_till:=now+millisecs
 		sleep_broken:=wait_interruptable(wait_till)
 		Loop 5{
 			tp:=(6-A_Index)*opacity_factor
-				WinSet,Transparent,%tp%, %A_ScriptName%
-			Sleep 30
+			WinSet,Transparent,%tp%, %A_ScriptName%
+			Sleep 20
 		}
 		if (sleep_broken)
 		{
@@ -198,6 +203,8 @@ subtitle(sub,millisecs)
 	else
 	{
 		WinSet,Transparent,%s_opacity%, %A_ScriptName%
+		;if (s_transparency=1)
+		;	WinSet, TransColor, 000000, %A_ScriptName%
 		Progress,,%sub%
 		Sleep %millisecs%
 		Progress, Off
@@ -225,6 +232,11 @@ else
 }
 return
 
+toggle_transparency:
+s_transparency:=Mod(s_transparency+1,2)
+subtitle(last_sub,200)
+Return
+
 toggle_pause:
 if (pause_start>0)
 {
@@ -249,6 +261,22 @@ s_yy:=s_yy-10
 subtitle("* * * * * * *  ||  * * * * * * *`n* * * * * * * \ / * * * * * * *",50)
 show_info()
 return
+
+oup:
+s_opacity+=10
+if (s_opacity>=255)
+	s_opacity:=255
+opacity_factor:=s_opacity/11
+subtitle(last_sub,150)
+Return
+
+odown:
+s_opacity-=10
+if (s_opacity<=0)
+	s_opacity:=0
+opacity_factor:=s_opacity/11
+subtitle(last_sub,150)
+Return
 
 fontplus:
 s_fontsize:=s_fontsize+1

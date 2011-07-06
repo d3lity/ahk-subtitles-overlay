@@ -21,18 +21,20 @@ You have to have Autohotkey (http://www.autohotkey.com/) installed. I believe it
 - drag & drop .srt or .sub -file over the script and it should start playing subtitles
 - carefully match subtitle playing with video (push play on video at right time)
 - keys:
-	1		Delay subtitles (if they come too early)
-	2		Forward subs (when they come too late)
-	z		Skip to next subtitle (easy way to adjust timing)
-	3		(.sub) Less delay (if subtitles seem to be getting behind, and have tried adjusting with 2)
-	4		(.sub) More delay (if subtitles seem to be getting earlier, and you have to adjust with 1)
-	q		smaller font-size
-	w		larger font-size
-	a		higher from the bottom of the screen
-	s		lower towards the bottom of the screen
-	d		Toggle vertical alignment (top/bottom)
-	p		Pause subtitle playing (so you could go bathroom while watching long movies)
-	x		Exit script (also by clicking Exit from trayicon)
+	1	Press when subs come too early
+	2	Press when subs come too late
+	z	Skip to next subtitle (easy way to adjust timing)
+	3	(.sub) Less delay (if subtitles seem to be getting behind, and have tried adjusting with 2)
+	4	(.sub) More delay (if subtitles seem to be getting earlier, and you have to adjust with 1)
+	q	smaller font-size
+	w	larger font-size
+	e	subtitle-box opacity down
+	r	subtitle-box opacity up
+	a	higher from the bottom of the screen
+	s	lower towards the bottom of the screen
+	d	Toggle vertical alignment (top/bottom)
+	p	Pause subtitle playing (so you could go bathroom while watching long movies)
+	x	Exit script (also by clicking Exit from trayicon)
 
 If keys overlap on some keyboard commands that you use during watching, you could change them by editing script-file. 
 
