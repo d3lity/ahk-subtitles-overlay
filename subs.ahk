@@ -45,7 +45,21 @@ IniRead, s_sub_second, settings.ini,sub,sub_second,965
 IniRead, s_opacity, settings.ini,sub,opacity,190
 opacity_factor:=s_opacity/11
 IniRead, s_valign, settings.ini,sub,valign,bottom
+IniRead, s_outline, settings.ini,sub,ouline,3
+s_outlinex2:=s_outline*2
 ;IniRead, s_transparency, settings.ini,sub,box_transparency,0
+
+	Gui 1: +LastFound +AlwaysOnTop -Caption +ToolWindow	
+	Gui 1:Margin,0,0
+	Gui 1: Color, 111111
+	Gui 1: Font, s%s_fontsize% q5, Verdana
+	sub:="fooo`nbbaar"
+	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt1 Center W%s_width%, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp-%s_outline% yp-%s_outline% vSt2 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp+%s_outlinex2% yp+0 vSt3 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp+0 yp+%s_outlinex2% vSt4 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp-%s_outlinex2% yp+0 vSt5 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt6 Center W%s_width%, %sub%
 
 subtitle("Pausing for you to find play button",4000)
 subtitle("In 5",1000)
@@ -132,6 +146,7 @@ if (f_srt>0)
 }
 
 subtitle("*** End of subtitles ***",2000)
+Gui, Destroy
 ExitApp
 
 wait_interruptable(wait_till)
@@ -158,18 +173,26 @@ wait_interruptable(wait_till)
 
 subtitle(sub,millisecs)
 {
-	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign,last_sub,s_transparency
+	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign,last_sub,s_transparency,St1,St2,St3,St4,St5,St6
 	last_sub:=sub
-	h:=0
+	h:=s_fontsize*0.65
 	Loop, parse, sub, `n
 	{
-		h:=h + s_fontsize +s_fontsize*0.7
+		h:=h + s_fontsize+s_fontsize*0.65
 	}
+	;h:=h+s_fontsize*0.8
+	Loop,6
+	{
+		GuiControl,, St%a_Index%, %sub%
+	}
+	
 	if (s_valign="top")
-		y:=s_height-s_yy
+		y:=s_yy
 	else
 		y:=s_height-h-s_yy
-	Progress,W%s_width% X%s_xx% Y%y% B H%h% ZH0 ZW0 FS%s_fontsize% CTffffff CW000000
+	
+
+	;Progress,W%s_width% X%s_xx% Y%y% B H%h% ZH0 ZW0 FS%s_fontsize% CTffffff CW000000
 	GetKeyState, z_key,z,P
 	if ((break_out or z_key = "D") and breaked_down>1)
 	{
@@ -177,38 +200,43 @@ subtitle(sub,millisecs)
 	}
 	if (millisecs>500)
 	{
-		WinSet,Transparent,0, %A_ScriptName%
-		Progress,,%sub%
+		;WinSet,Transparent,0, %A_ScriptName%
+		WinSet, TransColor, 111111 0, %A_ScriptName%
+		Gui 1: Show,Y%y% H%h% XCenter NA
+		;Gui, Show,xp%s_xx%
+
 		Loop 5{
 			tp:=A_Index*opacity_factor
-			WinSet,Transparent,%tp%, %A_ScriptName%
+			;WinSet,Transparent,%tp%, %A_ScriptName%
+			WinSet, TransColor, 111111 %tp%, %A_ScriptName%
 			Sleep 20
 		}
-		WinSet,Transparent,%s_opacity%, %A_ScriptName%
+		;WinSet,Transparent,%s_opacity%, %A_ScriptName%
+		WinSet, TransColor, 111111 %s_opacity%, %A_ScriptName%
 		now:=A_TickCount
 		millisecs:=millisecs-200
 		wait_till:=now+millisecs
 		sleep_broken:=wait_interruptable(wait_till)
 		Loop 5{
 			tp:=(6-A_Index)*opacity_factor
-			WinSet,Transparent,%tp%, %A_ScriptName%
+			;WinSet,Transparent,%tp%, %A_ScriptName%
+			WinSet, TransColor, 111111 %tp%, %A_ScriptName%
 			Sleep 20
 		}
 		if (sleep_broken)
 		{
 			breaked_down++
 		}
-		Progress, Off
 	}
 	else
 	{
-		WinSet,Transparent,%s_opacity%, %A_ScriptName%
-		;if (s_transparency=1)
-		;	WinSet, TransColor, 000000, %A_ScriptName%
-		Progress,,%sub%
+		WinSet, TransColor, 111111 %s_opacity%
+		Gui, Show,Y%y%,NA
 		Sleep %millisecs%
-		Progress, Off
 	}
+	Gui, Hide
+	;Gui, Destroy
+	;Destroy
 }
 
 show_info(){
@@ -223,12 +251,12 @@ change_alignment:
 if (s_valign="top")
 {
 	s_valign:="bottom"
-	s_yy:=s_yy-(s_fontsize*2+s_fontsize*0.7)
+	;s_yy:=s_yy-(s_fontsize*2+s_fontsize*0.7)
 }
 else
 {
 	s_valign:="top"
-	s_yy:=s_yy+(s_fontsize*2+s_fontsize*0.7)
+	;s_yy:=s_yy+(s_fontsize*2+s_fontsize*0.7)
 }
 return
 
