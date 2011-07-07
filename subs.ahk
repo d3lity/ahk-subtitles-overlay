@@ -53,19 +53,7 @@ IniRead, s_fading, settings.ini,sub,fading,1
 
 ;IniRead, s_transparency, settings.ini,sub,box_transparency,0
 
-	Gui 1: +LastFound +AlwaysOnTop -Caption +ToolWindow
-	Gui 1:Margin,0,0
-	Gui 1: Color, 111111
-	Gui 1: Font, s%s_fontsize% q2, %s_font%
-	sub:="fooo`nbbaar"
-	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt1 Center W%s_width%, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp+%s_outline% yp-%s_outline% vSt2 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp-%s_outlinex2% yp+0 vSt3 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp+0 yp+%s_outlinex2% vSt4 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp+%s_outlinex2% yp+0 vSt5 Center W%s_width% c000000, %sub%
-	s_outline:=s_outline/2
-	;Gui 1: Add, Text, BackgroundTrans xp+2 yp+1 vSt7 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt6 Center W%s_width%, %sub%
+Gosub create_gui
 
 subtitle("Pausing for you to find play button",4000)
 subtitle("In 5",1000)
@@ -194,7 +182,7 @@ subtitle(sub,millisecs)
 	}
 	
 	if (s_valign="top")
-		y:=s_height-h-s_yy
+		y:=s_height-s_yy
 	else
 		y:=s_height-h-s_yy
 	
@@ -262,17 +250,32 @@ show_info(){
 do_nothing:
 Return
 
+create_gui:
+	Gui 1: +LastFound +AlwaysOnTop -Caption +ToolWindow
+	Gui 1:Margin,0,0
+	Gui 1: Color, 111111
+	Gui 1: Font, s%s_fontsize% q2, %s_font%
+	sub:="fooo`nbbaar"
+	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt1 Center W%s_width%, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp+%s_outline% yp-%s_outline% vSt2 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp-%s_outlinex2% yp+0 vSt3 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp+0 yp+%s_outlinex2% vSt4 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp+%s_outlinex2% yp+0 vSt5 Center W%s_width% c000000, %sub%
+	;Gui 1: Add, Text, BackgroundTrans xp+2 yp+1 vSt7 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt6 Center W%s_width%, %sub%
+Return
+
 change_alignment:
 if (s_valign="top")
 {
 	s_valign:="bottom"
-	s_yy:=s_yy-(s_fontsize*1)
+	s_yy:=s_yy-(s_fontsize*3.7)
 	subtitle("Alignment bottom",200)
 }
 else
 {
 	s_valign:="top"
-	s_yy:=s_yy+(s_fontsize*1)
+	s_yy:=s_yy+(s_fontsize*3.7)
 	subtitle("Alignment top",200)
 }
 return
@@ -325,12 +328,16 @@ Return
 
 fontplus:
 s_fontsize:=s_fontsize+1
+Gui,Destroy
+Gosub create_gui
 subtitle("Bigger font-size",50)
 show_info()
 return
 
 fontminus:
 s_fontsize:=s_fontsize-1
+Gui,Destroy
+Gosub create_gui
 subtitle("Smaller font-size",50)
 show_info()
 return
