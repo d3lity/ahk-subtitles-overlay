@@ -48,7 +48,6 @@ IniRead, s_font, settings.ini,sub,font,Verdana
 opacity_factor:=s_opacity/11
 IniRead, s_valign, settings.ini,sub,valign,bottom
 IniRead, s_outline, settings.ini,sub,ouline,3
-s_outlinex2:=s_outline*2
 IniRead, s_fading, settings.ini,sub,fading,1
 
 ;IniRead, s_transparency, settings.ini,sub,box_transparency,0
@@ -176,7 +175,7 @@ subtitle(sub,millisecs)
 		h:=h + s_fontsize+s_fontsize*0.65
 	}
 	;h:=h+s_fontsize*0.8
-	Loop,6
+	Loop,9
 	{
 		GuiControl,, St%a_Index%, %sub%
 	}
@@ -256,13 +255,20 @@ create_gui:
 	Gui 1: Color, 111111
 	Gui 1: Font, s%s_fontsize% q2, %s_font%
 	sub:="fooo`nbbaar"
-	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt1 Center W%s_width%, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp+%s_outline% yp-%s_outline% vSt2 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp-%s_outlinex2% yp+0 vSt3 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp+0 yp+%s_outlinex2% vSt4 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp+%s_outlinex2% yp+0 vSt5 Center W%s_width% c000000, %sub%
-	;Gui 1: Add, Text, BackgroundTrans xp+2 yp+1 vSt7 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt6 Center W%s_width%, %sub%
+	
+	o1:=s_outline
+	o2:=s_outline*2
+	op:=o1+Round(s_outline/2)
+	om:=o1-Round(s_outline/2)
+	Gui 1: Add, Text, BackgroundTrans vSt1 x%o2% y%o1% Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans vSt2 x%o1% y0    Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans vSt3 x0    y%o1% Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans vSt4 x%o1% y%o2% Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans vSt5 x%om% y%om% Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans vSt6 x%op% y%om% Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans vSt7 x%op% y%op% Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans vSt8 x%om% y%op% Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans vSt9 x%o1% y%o1% Center W%s_width% cFFFFFF, %sub%
 Return
 
 change_alignment:
