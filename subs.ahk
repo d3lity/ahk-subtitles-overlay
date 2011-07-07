@@ -56,10 +56,12 @@ s_outlinex2:=s_outline*2
 	Gui 1: Font, s%s_fontsize% q2, %s_font%
 	sub:="fooo`nbbaar"
 	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt1 Center W%s_width%, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp-%s_outline% yp-%s_outline% vSt2 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp+%s_outlinex2% yp+0 vSt3 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp+%s_outline% yp-%s_outline% vSt2 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp-%s_outlinex2% yp+0 vSt3 Center W%s_width% c000000, %sub%
 	Gui 1: Add, Text, BackgroundTrans xp+0 yp+%s_outlinex2% vSt4 Center W%s_width% c000000, %sub%
-	Gui 1: Add, Text, BackgroundTrans xp-%s_outlinex2% yp+0 vSt5 Center W%s_width% c000000, %sub%
+	Gui 1: Add, Text, BackgroundTrans xp+%s_outlinex2% yp+0 vSt5 Center W%s_width% c000000, %sub%
+	s_outline:=s_outline/2
+	;Gui 1: Add, Text, BackgroundTrans xp+2 yp+1 vSt7 Center W%s_width% c000000, %sub%
 	Gui 1: Add, Text, BackgroundTrans x%s_outlinex2% y%s_outlinex2% cFFFFFF vSt6 Center W%s_width%, %sub%
 
 subtitle("Pausing for you to find play button",4000)
@@ -174,7 +176,8 @@ wait_interruptable(wait_till)
 
 subtitle(sub,millisecs)
 {
-	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign,last_sub,s_transparency,St1,St2,St3,St4,St5,St6
+	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign,last_sub,s_transparency
+
 	last_sub:=sub
 	h:=s_fontsize*0.65
 	Loop, parse, sub, `n
@@ -195,7 +198,7 @@ subtitle(sub,millisecs)
 
 	;Progress,W%s_width% X%s_xx% Y%y% B H%h% ZH0 ZW0 FS%s_fontsize% CTffffff CW000000
 	GetKeyState, z_key,z,P
-	if ((break_out or z_key = "D") and breaked_down>1)
+	if (z_key = "D" and breaked_down>1)
 	{
 		millisecs:=100
 	}
@@ -228,12 +231,20 @@ subtitle(sub,millisecs)
 		{
 			breaked_down++
 		}
+		else
+		{
+			breaked_down:=0
+		}
 	}
 	else
 	{
 		WinSet, TransColor, 111111 %s_opacity%
-		Gui, Show,Y%y%,NA
+		;Gui, Show,Y%y%,NA
+		Gui 1: Show,Y%y% H%h% XCenter NA
 		Sleep %millisecs%
+		GetKeyState, z_key,z,P
+		if (z_key <> "D")
+			breaked_down:=0
 	}
 	Gui, Hide
 	;Gui, Destroy
