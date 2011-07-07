@@ -21,6 +21,7 @@ Hotkey, a, tup
 Hotkey, s, tdown
 
 Hotkey, d, change_alignment
+Hotkey, f, toggle_fade
 
 
 Hotkey, p, toggle_pause
@@ -48,6 +49,8 @@ opacity_factor:=s_opacity/11
 IniRead, s_valign, settings.ini,sub,valign,bottom
 IniRead, s_outline, settings.ini,sub,ouline,3
 s_outlinex2:=s_outline*2
+IniRead, s_fading, settings.ini,sub,fading,1
+
 ;IniRead, s_transparency, settings.ini,sub,box_transparency,0
 
 	Gui 1: +LastFound +AlwaysOnTop -Caption +ToolWindow
@@ -176,7 +179,7 @@ wait_interruptable(wait_till)
 
 subtitle(sub,millisecs)
 {
-	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign,last_sub,s_transparency
+	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign,last_sub,s_transparency,s_fading
 
 	last_sub:=sub
 	h:=s_fontsize*0.65
@@ -191,7 +194,7 @@ subtitle(sub,millisecs)
 	}
 	
 	if (s_valign="top")
-		y:=s_yy
+		y:=s_height-h-s_yy
 	else
 		y:=s_height-h-s_yy
 	
@@ -202,7 +205,7 @@ subtitle(sub,millisecs)
 	{
 		millisecs:=100
 	}
-	if (millisecs>500)
+	if (millisecs>500 and s_fading)
 	{
 		;WinSet,Transparent,0, %A_ScriptName%
 		WinSet, TransColor, 111111 0, %A_ScriptName%
@@ -263,18 +266,20 @@ change_alignment:
 if (s_valign="top")
 {
 	s_valign:="bottom"
-	;s_yy:=s_yy-(s_fontsize*2+s_fontsize*0.7)
+	s_yy:=s_yy-(s_fontsize*1)
+	subtitle("Alignment bottom",200)
 }
 else
 {
 	s_valign:="top"
-	;s_yy:=s_yy+(s_fontsize*2+s_fontsize*0.7)
+	s_yy:=s_yy+(s_fontsize*1)
+	subtitle("Alignment top",200)
 }
 return
 
-toggle_transparency:
-s_transparency:=Mod(s_transparency+1,2)
-subtitle(last_sub,200)
+toggle_fade:
+s_fading:=Mod(s_fading+1,2)
+;subtitle(last_sub,200)
 Return
 
 toggle_pause:
