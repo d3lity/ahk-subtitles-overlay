@@ -3,11 +3,8 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-Hotkey, x, goex
 Hotkey, 1, syncplus
 Hotkey, 2, syncminus
-Hotkey, z, do_nothing
-
 Hotkey, 3, ssminus
 Hotkey, 4, ssplus
 
@@ -17,24 +14,19 @@ Hotkey, r, oup
 Hotkey, e, odown
 ;Hotkey, t, toggle_transparency
 
+Hotkey, p, toggle_pause
+
 Hotkey, a, tup
 Hotkey, s, tdown
-
 Hotkey, d, change_alignment
 Hotkey, f, toggle_fade
 
+Hotkey, z, do_nothing
+Hotkey, x, goex
+Hotkey, c, monitorCoords
 
-Hotkey, p, toggle_pause
 pause_start:=0
 
-SysGet,s_width, 16
-SysGet,s_widthv, 78
-
-s_xx:=(s_widthv-s_width)
-s_width:=s_widthv
-s_xx:=s_xx/2
-
-SysGet,s_height, 79
 s_fontsize:=50
 s_yy=100
 
@@ -42,7 +34,7 @@ s_yy=100
 
 IniRead, s_fontsize, settings.ini,sub,fontsize,50
 IniRead, s_yy, settings.ini,sub,from_bottom,100
-IniRead, s_sub_second, settings.ini,sub,sub_second,965
+IniRead, s_sub_second, settings.ini,sub,sub_second,1000
 IniRead, s_opacity, settings.ini,sub,opacity,190
 IniRead, s_font, settings.ini,sub,font,Verdana
 opacity_factor:=s_opacity/11
@@ -52,8 +44,12 @@ IniRead, s_fading, settings.ini,sub,fading,1
 
 ;IniRead, s_transparency, settings.ini,sub,box_transparency,0
 
-Gosub create_gui
+IniRead, monitor, settings.ini,sub,monitor,1
+monitor:=monitor-1			; substract one because monitorCoords is toggling code
+GoSub monitorCoords
+;Gosub create_gui ; this is being done already while checking coordinates
 
+running:=1
 subtitle("Pausing for you to find play button",4000)
 subtitle("In 5",1000)
 subtitle("In 4",1000)
@@ -196,8 +192,7 @@ subtitle(sub,millisecs)
 	{
 		;WinSet,Transparent,0, %A_ScriptName%
 		WinSet, TransColor, 111111 0, %A_ScriptName%
-		Gui 1: Show,Y%y% H%h% XCenter NA
-		;Gui, Show,xp%s_xx%
+		Gui 1: Show,Y%y% H%h% X%s_xx% NA
 
 		Loop 5{
 			tp:=A_Index*opacity_factor
@@ -229,8 +224,7 @@ subtitle(sub,millisecs)
 	else
 	{
 		WinSet, TransColor, 111111 %s_opacity%
-		;Gui, Show,Y%y%,NA
-		Gui 1: Show,Y%y% H%h% XCenter NA
+		Gui 1: Show,Y%y% H%h% X%s_xx% NA
 		Sleep %millisecs%
 		GetKeyState, z_key,z,P
 		if (z_key <> "D")
@@ -249,7 +243,24 @@ show_info(){
 do_nothing:
 Return
 
+
+monitorCoords:														; --- changes current showing monitor ---
+
+SysGet, mc, MonitorCount
+monitor:=monitor+1
+If (monitor>mc)
+	monitor:=1
+SysGet, Mon, Monitor, %monitor% 
+s_width:=MonRight-MonLeft
+s_xx:=MonLeft
+s_height:=MonBottom
+Gosub create_gui			; refresh gui, because different width maybe on other monitor
+if (running)
+	subtitle("Changed monitor ( " monitor " )",500)
+Return
+
 create_gui:
+	Gui 1: Destroy
 	Gui 1: +LastFound +AlwaysOnTop -Caption +ToolWindow
 	Gui 1:Margin,0,0
 	Gui 1: Color, 111111
