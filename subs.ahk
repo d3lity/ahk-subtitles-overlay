@@ -50,10 +50,8 @@ GoSub monitorCoords
 ;Gosub create_gui ; this is being done already while checking coordinates
 
 running:=1
-foo:
+
 subtitle("Pausing for you to find play button",500)
-subtitle("Pausing for you to find play button`nPausing for you to find play button",500)
-Goto foo
 subtitle("In 5",1000)
 subtitle("In 4",1000)
 subtitle("In 3",1000)
@@ -226,8 +224,8 @@ subtitle(sub,millisecs)
 	}
 	else
 	{
-		WinSet, TransColor, 111111 %s_opacity%
 		Gui 1: Show,Y%y% H%h% X%s_xx% NA
+		WinSet, TransColor, 111111 %s_opacity%, %A_ScriptName%
 		Sleep %millisecs%
 		GetKeyState, z_key,z,P
 		if (z_key <> "D")
