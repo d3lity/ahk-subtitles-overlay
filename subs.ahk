@@ -50,7 +50,10 @@ GoSub monitorCoords
 ;Gosub create_gui ; this is being done already while checking coordinates
 
 running:=1
-subtitle("Pausing for you to find play button",4000)
+foo:
+subtitle("Pausing for you to find play button",500)
+subtitle("Pausing for you to find play button`nPausing for you to find play button",500)
+Goto foo
 subtitle("In 5",1000)
 subtitle("In 4",1000)
 subtitle("In 3",1000)
@@ -168,7 +171,7 @@ subtitle(sub,millisecs)
 	h:=s_fontsize*0.65
 	Loop, parse, sub, `n
 	{
-		h:=h + s_fontsize+s_fontsize*0.65
+		h:=h +s_fontsize*1.48
 	}
 	;h:=h+s_fontsize*0.8
 	Loop,9
