@@ -5,8 +5,10 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 Hotkey, 1, syncplus
 Hotkey, 2, syncminus
-Hotkey, 3, ssminus
-Hotkey, 4, ssplus
+Hotkey, 3, ssplus
+Hotkey, 4, ssminus
+Hotkey, 5, toggle_frametime
+t_framerate:=0
 
 Hotkey, q, fontminus
 Hotkey, w, fontplus
@@ -50,6 +52,7 @@ GoSub monitorCoords
 ;Gosub create_gui ; this is being done already while checking coordinates
 
 running:=1
+framesPerSecond:=24
 
 subtitle("Pausing for you to find play button",500)
 subtitle("In 5",1000)
@@ -79,7 +82,8 @@ Loop, read, %fn%
 		{
 			; get frame time
 			RegExMatch(A_LoopReadLine, "[}]([^}]+)$",ar)
-			ftime:=1/Round(ar1)*s_sub_second
+			framesPerSecond:=ar1
+			ftime:=1/Round(framesPerSecond)*s_sub_second
 		}
 		if (A_Index > 1)
 		{
@@ -362,14 +366,30 @@ return
 
 ssplus:
 s_sub_second:=s_sub_second+2
+ftime:=1/framesPerSecond*s_sub_second
 show_info()
 Sleep -1
 return
 
 ssminus:
 s_sub_second:=s_sub_second-2
+ftime:=1/framesPerSecond*s_sub_second
 show_info()
 Sleep -1
+return
+
+toggle_frametime:
+t_framerate:=Mod(t_framerate+1,3)
+if (t_framerate==0) 
+	frames:=23.976
+if (t_framerate==1) 
+	frames:=24
+if (t_framerate==2) 
+	frames:=25
+if (t_framerate==3) 
+	frames:=30
+ftime:=1/frames*s_sub_second
+subtitle("Frames Per Second " frames,500)
 return
 
 syncplus:

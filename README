@@ -26,6 +26,7 @@ You have to have Autohotkey (http://www.autohotkey.com/) installed. I believe it
 	z	Skip to next subtitle (easy way to adjust timing)
 	3	(.sub) Less delay (if subtitles seem to be getting behind, and have tried adjusting with 2)
 	4	(.sub) More delay (if subtitles seem to be getting earlier, and you have to adjust with 1)
+	5 toggling trough most common framerates (doesn't help when you have different cut)
 	q	smaller font-size
 	w	larger font-size
 	e	subtitle opacity down
