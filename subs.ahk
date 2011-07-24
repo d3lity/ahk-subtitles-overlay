@@ -43,6 +43,7 @@ opacity_factor:=s_opacity/11
 IniRead, s_valign, settings.ini,sub,valign,bottom
 IniRead, s_outline, settings.ini,sub,ouline,3
 IniRead, s_fading, settings.ini,sub,fading,1
+;s_fading:=0
 
 ;IniRead, s_transparency, settings.ini,sub,box_transparency,0
 
@@ -51,19 +52,32 @@ monitor:=monitor-1			; substract one because monitorCoords is toggling code
 GoSub monitorCoords
 ;Gosub create_gui ; this is being done already while checking coordinates
 
+;#Bookmark#
+Gui 2:Add,Edit,r1 vSubSearch W360 section,
+Gui 2:Add,Button,Default ys gSearch,>
+Gui 2:Add,ListBox,W400 H300 vSubSelect AltSubmit gSubSelected xs,
+
+;Gui 2:Add,Button,xs gtoggle_frametime,Toggle frametimes
+Gui 2:Add,Button,xs Section gfontminus,FontSize-
+Gui 2:Add,Button,ys gfontplus,FontSize+
+Gui 2:Add,Button,ys goup,Opacity+
+Gui 2:Add,Button,ys godown,Opacity-
+;Hotkey, p, toggle_pause
+Gui 2:Add,Button,ys gtup,up
+Gui 2:Add,Button,ys gtdown,down
+Gui 2:Add,Button,ys gchange_alignment,VAlign
+
+Gui 2:Add,Button,xs Section gtoggle_fade, Fading?
+Gui 2:Add,Button,ys gmonitorCoords, Monitor
+
+Gui 2:Add,Button,ys ggoex,Quit
+
+
 running:=1
 framesPerSecond:=24
 
-subtitle("Pausing for you to find play button",500)
-subtitle("In 5",1000)
-subtitle("In 4",1000)
-subtitle("In 3",1000)
-subtitle("In 2",1000)
-subtitle("In 1",1000)
-subtitle("Push 'Play' Now!",1000)
-
-start:=A_TickCount
-wait_till:=start
+last_time:=A_TickCount
+wait_till:=0
 breaked_down:=0
 
 Loop %1%, 1
@@ -74,6 +88,8 @@ f_sub:=RegExMatch(fn,"i)[.]sub$")
 
 break_out:=0
 
+sub_number:=1
+sub:=""
 Loop, read, %fn%
 {
 	if (f_sub>0)	
@@ -85,17 +101,12 @@ Loop, read, %fn%
 			framesPerSecond:=ar1
 			ftime:=1/Round(framesPerSecond)*s_sub_second
 		}
+	
 		if (A_Index > 1)
-		{
-			now:=A_TickCount
-			RegExMatch(A_LoopReadLine, "{(.*?)}{(.*?)}([^§]+)$",ar)
-			ta:=ar1*ftime
-			tb:=ar2*ftime
-			l:=tb-ta
-			sub:=RegExReplace(ar3,"[|]","`n")
-			wait_till:=ta+start
-			wait_interruptable(wait_till)
-			subtitle(sub,l)
+		{		
+			subs%sub_number%:=A_LoopReadLine
+			GuiControl,2:,SubSelect,%sub_number%`t%A_LoopReadLine%
+			sub_number++
 		}
 	}
 	
@@ -107,10 +118,15 @@ Loop, read, %fn%
 			nexti:=0
 			sub := RegExReplace(sub, "^`n", "")
 			sub := RegExReplace(sub, "`n$", "")
-			subtitle(sub,l)
+			if (sub!="")
+			{				
+				subs%sub_number%:=subs%sub_number% sub
+				GuiControl,2:,SubSelect,%sub_number%`t%sub%
+				sub_number++
+			}
 			continue
 		}
-		
+		;#Bookmark#
 		if (nexti = 2)
 		{
 			sub:=sub "`n" A_LoopReadLine
@@ -119,25 +135,88 @@ Loop, read, %fn%
 		f := RegExMatch(A_LoopReadLine, "^(\d\d):(\d\d):(\d\d),(\d\d\d) --[>] (\d\d):(\d\d):(\d\d),(\d\d\d)$",ar)
 		if (f>0)
 		{
+			subs%sub_number%:=A_LoopReadLine
+			nexti:=2
+			sub:=""
+		}
+	}
+}
+Gui 2:-SysMenu
+Gui 2:Show,,Gui for subtitles
+;gui, 2:+owner1
+
+;subtitle("Pausing for you to find play button",500)
+;subtitle("In 5",1000)
+;subtitle("In 4",1000)
+;subtitle("In 3",1000)
+;subtitle("In 2",1000)
+;subtitle("In 1",1000)
+subtitle("Push 'Play' Now!",1000)
+
+on_line:=1
+last_time:=A_TickCount
+break_me:=0
+
+While (on_line<sub_number)
+{
+	if (break_me>0)
+		on_line:=break_me
+		
+	line:=subs%on_line%
+	
+	if (f_sub>0)
+	{
+			now:=A_TickCount
+			RegExMatch(line, "{(.*?)}{(.*?)}([^§]+)$",ar)
+			ta:=ar1*ftime
+			tb:=ar2*ftime
+			l:=tb-ta
+			sub:=RegExReplace(ar3,"[|]","`n")
+			;wait_till:=ta+start
+			wait_till:=A_TickCount + ta-last_time
+			bm:=break_me
+			;if (wait_interruptable(wait_till)==1 AND bm==1)
+			bm:=break_me
+			wait_interruptable(wait_till)
+			if (break_me==on_line AND bm>0)
+			{
+				break_me:=0
+				last_time:=A_TickCount
+			}
+			center_online()
+			last_time:=tb
+			subtitle(sub,l)
+	}
+	
+	if (f_srt>0)
+	{
+		; matching : 00:01:06,367 --> 00:01:08,801
+		f := RegExMatch(line, "^(\d\d):(\d\d):(\d\d),(\d\d\d) --[>] (\d\d):(\d\d):(\d\d),(\d\d\d)([^§]+)$",ar)
+		if (f>0)
+		{
 			now:=A_TickCount
 			ta:= Round(ar1)*3600000 + Round(ar2)*60000 + Round(ar3)*1000 + Round(ar4)
 			tb:= Round(ar5)*3600000 + Round(ar6)*60000 + Round(ar7)*1000 + Round(ar8)
 			l:=tb-ta
 			nexti:=2
-			wait_till:=start+ta
+			;wait_till:=start+ta
+			wait_till:=A_TickCount + ta-last_time
+			last_time:=tb
+			bm:=break_me
 			wait_interruptable(wait_till)
-			sub:=""
+			if (break_me==on_line AND bm>0)
+			{
+				break_me:=0
+				last_time:=A_TickCount
+			}
+			center_online()	
+			subtitle(ar9,l)
 		}
 	}
+	if (break_me==0)
+		on_line++
 }
 
-; Show last subtitle also..
-if (f_srt>0)
-{
-	sub := RegExReplace(sub, "^`n", "")
-	sub := RegExReplace(sub, "`n$", "")
-	subtitle(sub,l)
-}
 
 subtitle("*** End of subtitles ***",2000)
 Gui, Destroy
@@ -145,7 +224,7 @@ ExitApp
 
 wait_interruptable(wait_till)
 {
-	global start,breaked_down
+	global start,breaked_down,break_me
 	while now<wait_till
 	{
 		Sleep 10
@@ -161,13 +240,19 @@ wait_interruptable(wait_till)
 		{
 			breaked_down:=0
 		}
+		if (break_me) {
+			return 1
+		}
 	}
 	return 0
 }
 
 subtitle(sub,millisecs)
 {
-	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign,last_sub,s_transparency,s_fading
+	global s_width,s_height,s_fontsize,s_yy,s_xx,opacity_factor,s_opacity,breaked_down,s_valign,last_sub,s_transparency,s_fading,break_me
+	
+	if (break_me)
+		return
 
 	last_sub:=sub
 	h:=s_fontsize*0.65
@@ -196,17 +281,20 @@ subtitle(sub,millisecs)
 	if (millisecs>500 and s_fading)
 	{
 		;WinSet,Transparent,0, %A_ScriptName%
-		WinSet, TransColor, 111111 0, %A_ScriptName%
-		Gui 1: Show,Y%y% H%h% X%s_xx% NA
+		;WinSet, TransColor, 111111 0, %A_ScriptName%
+		
+		Gui 1: Show,Y%y% H%h% X%s_xx% NA,zsubtitles
 
 		Loop 5{
 			tp:=A_Index*opacity_factor
 			;WinSet,Transparent,%tp%, %A_ScriptName%
-			WinSet, TransColor, 111111 %tp%, %A_ScriptName%
+			WinSet TransColor, 111111 %tp%, zsubtitles
+			;%A_ScriptName%
 			Sleep 25
 		}
 		;WinSet,Transparent,%s_opacity%, %A_ScriptName%
-		WinSet, TransColor, 111111 %s_opacity%, %A_ScriptName%
+		WinSet, TransColor, 111111 %s_opacity%, zsubtitles
+		;%A_ScriptName%
 		now:=A_TickCount
 		millisecs:=millisecs-250
 		wait_till:=now+millisecs
@@ -214,7 +302,8 @@ subtitle(sub,millisecs)
 		Loop 5{
 			tp:=(6-A_Index)*opacity_factor
 			;WinSet,Transparent,%tp%, %A_ScriptName%
-			WinSet, TransColor, 111111 %tp%, %A_ScriptName%
+			WinSet, TransColor, 111111 %tp%, zsubtitles
+			;%A_ScriptName%
 			Sleep 25
 		}
 		if (sleep_broken)
@@ -228,16 +317,17 @@ subtitle(sub,millisecs)
 	}
 	else
 	{
-		Gui 1: Show,Y%y% H%h% X%s_xx% NA
-		WinSet, TransColor, 111111 %s_opacity%, %A_ScriptName%
-		Sleep %millisecs%
+		Gui 1: Show,Y%y% H%h% X%s_xx% NA,zsubtitles
+		WinSet, TransColor, 111111 %s_opacity%,zsubtitles
+		;Sleep %millisecs%
+		wait_till:=A_TickCount+millisecs
+		wait_interruptable(wait_till)
 		GetKeyState, z_key,z,P
 		if (z_key <> "D")
 			breaked_down:=0
 	}
-	Gui, Hide
-	;Gui, Destroy
-	;Destroy
+	Gui 1:Hide
+
 }
 
 show_info(){
@@ -245,6 +335,18 @@ show_info(){
 	Traytip,,fs=%s_fontsize% yy=%s_yy% sub=%s_sub_second% start=%start%
 }
 
+center_online()
+{
+	global on_line,sub_number
+	
+	o:=on_line-10
+	if (o>1) 
+		GuiControl 2:Choose, SubSelect, %o%
+	o:=on_line+11
+	if (o<sub_number) 
+		GuiControl 2:Choose, SubSelect, %o%
+	GuiControl 2:Choose, SubSelect, %on_line%
+}
 do_nothing:
 Return
 
@@ -270,7 +372,7 @@ create_gui:
 	Gui 1:Margin,0,0
 	Gui 1: Color, 111111
 	Gui 1: Font, s%s_fontsize% q2, %s_font%
-	sub:="fooo`nbbaar"
+	sub:="Example`nsubtitle"
 	
 	o1:=s_outline
 	o2:=s_outline*2
@@ -350,7 +452,7 @@ Return
 
 fontplus:
 s_fontsize:=s_fontsize+1
-Gui,Destroy
+Gui 1:Destroy
 Gosub create_gui
 subtitle("Bigger font-size",50)
 show_info()
@@ -358,7 +460,7 @@ return
 
 fontminus:
 s_fontsize:=s_fontsize-1
-Gui,Destroy
+Gui 1:Destroy
 Gosub create_gui
 subtitle("Smaller font-size",50)
 show_info()
@@ -403,6 +505,38 @@ start:=start-250
 show_info()
 Sleep -1
 return
+
+
+SubSelected:
+;#Bookmark#
+;Gui 2:Submit,NoHide
+GuiControlGet sel,,SubSelect
+;s:=subs%sel%
+;MsgBox %s%
+on_line:=sel
+break_me:=sel
+return
+
+Search:
+GuiControlGet sel,,SubSearch
+GuiControlGet seli,,SubSelect
+;MsgBox %sel%
+if (seli<sub_number)
+	i:=seli+1
+While i<sub_number
+{
+	t:=subs%i%
+	if (InStr(t,sel))
+	{
+		GuiControl, Choose, SubSelect, |%i%
+		return
+	}
+	i++
+}
+GuiControl, Choose, SubSelect,1
+return
+
+GuiClose:
 
 goex:
 ExitApp
