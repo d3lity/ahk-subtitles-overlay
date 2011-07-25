@@ -37,6 +37,7 @@ s_yy=100
 IniRead, s_fontsize, settings.ini,sub,fontsize,50
 IniRead, s_yy, settings.ini,sub,from_bottom,100
 IniRead, s_sub_second, settings.ini,sub,sub_second,1000
+;965
 IniRead, s_opacity, settings.ini,sub,opacity,190
 IniRead, s_font, settings.ini,sub,font,Verdana
 opacity_factor:=s_opacity/11
@@ -99,14 +100,18 @@ Loop, read, %fn%
 			; get frame time
 			RegExMatch(A_LoopReadLine, "[}]([^}]+)$",ar)
 			framesPerSecond:=ar1
-			ftime:=1/Round(framesPerSecond)*s_sub_second
+			ftime:=1/framesPerSecond*s_sub_second
 		}
 	
 		if (A_Index > 1)
-		{		
-			subs%sub_number%:=A_LoopReadLine
-			GuiControl,2:,SubSelect,%sub_number%`t%A_LoopReadLine%
-			sub_number++
+		{
+			f:=RegExMatch(A_LoopReadLine, "^{(.*?)}{(.*?)}([^§]+)$",ar)
+			if (f>0){
+				subs%sub_number%:=A_LoopReadLine
+				ar3:=RegExReplace(ar3,"[|]"," ")
+				GuiControl,2:,SubSelect,%sub_number%`t%ar3%
+				sub_number++
+			}
 		}
 	}
 	
@@ -222,9 +227,10 @@ subtitle("*** End of subtitles ***",2000)
 Gui, Destroy
 ExitApp
 
-wait_interruptable(wait_till)
+wait_interruptable(wait_tilli)
 {
-	global start,breaked_down,break_me
+	global start,breaked_down,break_me,wait_till
+	wait_till:=wait_tilli
 	while now<wait_till
 	{
 		Sleep 10
@@ -470,14 +476,12 @@ ssplus:
 s_sub_second:=s_sub_second+2
 ftime:=1/framesPerSecond*s_sub_second
 show_info()
-Sleep -1
 return
 
 ssminus:
 s_sub_second:=s_sub_second-2
 ftime:=1/framesPerSecond*s_sub_second
 show_info()
-Sleep -1
 return
 
 toggle_frametime:
@@ -495,13 +499,15 @@ subtitle("Frames Per Second " frames,500)
 return
 
 syncplus:
-start:=start+250
+;start:=start+250
+wait_till:=wait_till+250
 show_info()
 Sleep -1
 return
 
 syncminus:
-start:=start-250
+wait_till:=wait_till-250
+;start:=start-250
 show_info()
 Sleep -1
 return
