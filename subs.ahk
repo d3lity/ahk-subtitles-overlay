@@ -99,8 +99,14 @@ Loop, read, %fn%
 		{
 			; get frame time
 			RegExMatch(A_LoopReadLine, "[}]([^}]+)$",ar)
-			framesPerSecond:=ar1
-			ftime:=1/framesPerSecond*s_sub_second
+			if (RegExMatch(ar1, "^\d",arn)>0)
+			{
+				framesPerSecond:=ar1
+				ftime:=1/framesPerSecond*s_sub_second
+			}else{
+				framesPerSecond:=24
+				ftime:=1/framesPerSecond*s_sub_second			
+			}
 		}
 	
 		if (A_Index > 1)
@@ -487,15 +493,15 @@ return
 toggle_frametime:
 t_framerate:=Mod(t_framerate+1,3)
 if (t_framerate==0) 
-	frames:=23.976
+	framesPerSecond:=23.976
 if (t_framerate==1) 
-	frames:=24
+	framesPerSecond:=24
 if (t_framerate==2) 
-	frames:=25
+	framesPerSecond:=25
 if (t_framerate==3) 
-	frames:=30
-ftime:=1/frames*s_sub_second
-subtitle("Frames Per Second " frames,500)
+	framesPerSecond:=30
+ftime:=1/framesPerSecond*s_sub_second
+subtitle("Frames Per Second " framesPerSecond,500)
 return
 
 syncplus:
